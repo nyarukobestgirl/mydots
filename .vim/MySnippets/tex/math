@@ -1,0 +1,90 @@
+# Snippet for typewriting font
+snippet tt "The \text{} command" i
+\text{$1}$0
+endsnippet
+
+# Snippet for fractions
+snippet ff "The LaTeX \frac{}{} command" i
+\frac{$1}{$2}$0
+endsnippet
+
+snippet align* "Align without numbering" w
+\begin{align*}
+	$1
+\end{align*}
+
+endsnippet
+
+snippet align "Align" w
+\begin{align}
+	$1
+\end{align}
+
+endsnippet
+
+global !p
+
+# Define matrix size in terms of rows/columns
+def mat(snip):
+	rows = snip.buffer[snip.line].split('x')[0]
+	cols = snip.buffer[snip.line].split('x')[1]
+
+	int_val = lambda string: int(''.join(s for s in string if s.isdigit()))
+	
+	r = int_val(rows)
+	c = int_val(cols)
+
+	offset = c + 1
+	old_spacing = snip.buffer[snip.line][:snip.buffer[snip.line].rfind('\t') + 1]
+	
+	snip.buffer[snip.line] = ''
+	
+	final_str = old_spacing + "\\begin{matrix}\n"
+
+	for i in range(r):
+		final_str += old_spacing + '\t'
+		final_str += " & ".join(['$' + str(i * c + j + offset) for j in range(c)])
+		final_str += " \\\\\\\n"
+	final_str += old_spacing + "\\end{matrix}\n$0"
+
+	snip.expand_anon(final_str)
+endglobal
+
+# Function that lets you specificy an nxm matrix
+
+pre_expand "mat(snip)"
+snippet "mat(\d+)x(\d+)" "Add matrix" r
+endsnippet
+
+# Snippet for homework
+snippet hwtemp "A template to start texing homework"
+\documentclass{article}
+\usepackage{amsmath}  % For math equations
+\usepackage{amsfonts} % For math fonts
+\usepackage{amssymb}  % For additional math symbols
+\usepackage{enumitem} % For customizing itemized lists
+\usepackage{geometry} % For setting page margins
+
+% Page margins
+\geometry{margin=1in}
+
+\title{$1}
+\author{$2}
+\date{\today}
+
+\allowdisplaybreaks
+
+\begin{document}
+\maketitle
+
+
+
+
+\section*{Questions}
+\begin{enumerate}[label=\textbf{Question \arabic*:}]
+
+\item $0
+
+\end{enumerate}
+\end{document}
+endsnippet
